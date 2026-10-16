@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <style>
+      body { width: 340px; margin: 0; padding: 16px; font: 13px system-ui, sans-serif; color: #17211c; }
+      h1 { margin: 0 0 4px; font-size: 18px; }
+      .subtitle { color: #66736c; margin: 0 0 14px; }
+      label { display: block; margin: 11px 0 4px; font-weight: 600; }
+      input, textarea { width: 100%; box-sizing: border-box; padding: 8px; border: 1px solid #cbd5d0; border-radius: 6px; font: inherit; }
+      textarea { min-height: 76px; resize: vertical; }
+      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      button { border: 0; border-radius: 6px; padding: 9px 11px; cursor: pointer; background: #176b45; color: white; }
+      button.secondary { background: #e9efec; color: #17211c; }
+      .buttons { display: flex; gap: 8px; margin-top: 12px; }
+      .toggle { display: flex; align-items: center; gap: 7px; font-weight: 600; }
+      .toggle input { width: auto; }
+      #status { margin-top: 14px; padding: 10px; background: #f1f5f3; border-radius: 7px; white-space: pre-wrap; }
+      #conversationUrl { color: #526058; }
+    </style>
+  </head>
+  <body>
+    <h1>Applier Keep Going</h1>
+    <p class="subtitle">Watch “Active … ago” and nudge Applier when idle.</p>
+
+    <label class="toggle"><input id="enabled" type="checkbox"> Monitoring enabled</label>
+    <label for="conversationUrl">Applier conversation</label>
+    <input id="conversationUrl" placeholder="Open Applier, then click Use current tab" readonly>
+    <button id="useCurrent" class="secondary" style="margin-top:7px">Use current tab</button>
+
+    <div class="row">
+      <div><label for="inactivityMinutes">Inactive after</label><input id="inactivityMinutes" type="number" min="1"><small>minutes</small></div>
+      <div><label for="cooldownMinutes">Send at most every</label><input id="cooldownMinutes" type="number" min="1"><small>minutes</small></div>
+    </div>
+
+    <label for="continuationMessage">Message to send</label>
+    <textarea id="continuationMessage"></textarea>
+
+    <div class="buttons"><button id="save">Save</button><button id="check" class="secondary">Check now</button></div>
+    <div id="status">Not checked yet</div>
+    <script src="popup.js"></script>
+  </body>
+</html>
