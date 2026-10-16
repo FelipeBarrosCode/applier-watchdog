@@ -10,6 +10,8 @@ Active 2h ago
 
 When that time exceeds your inactivity setting, it sends a continuation message. A cooldown prevents repeated messages too quickly.
 
+It can also automatically click a visible ChatGPT permission button whose text exactly matches **Always allow**. This behavior has its own checkbox in the extension popup and is enabled by default.
+
 There is no server, build process, database, Google Sheets integration, or credential manager.
 
 ## Install

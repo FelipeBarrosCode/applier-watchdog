@@ -3,6 +3,7 @@ const DEFAULTS = {
   conversationUrl: "",
   inactivityMinutes: 12,
   cooldownMinutes: 15,
+  autoAlwaysAllow: true,
   continuationMessage:
     "Continue the existing job application pipeline from where you stopped. Do not restart completed applications or create duplicates.",
   lastResult: "Not checked yet",
@@ -13,7 +14,7 @@ const DEFAULTS = {
   lastSentActivityAnchorAt: 0,
 };
 
-const ids = ["enabled", "conversationUrl", "inactivityMinutes", "cooldownMinutes", "continuationMessage"];
+const ids = ["enabled", "autoAlwaysAllow", "conversationUrl", "inactivityMinutes", "cooldownMinutes", "continuationMessage"];
 
 async function load() {
   const values = { ...DEFAULTS, ...(await chrome.storage.local.get(DEFAULTS)) };
@@ -36,6 +37,7 @@ function renderStatus(values) {
 async function save() {
   const values = {
     enabled: document.getElementById("enabled").checked,
+    autoAlwaysAllow: document.getElementById("autoAlwaysAllow").checked,
     conversationUrl: document.getElementById("conversationUrl").value,
     inactivityMinutes: Math.max(1, Number(document.getElementById("inactivityMinutes").value) || 12),
     cooldownMinutes: Math.max(1, Number(document.getElementById("cooldownMinutes").value) || 15),

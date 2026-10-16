@@ -3,6 +3,7 @@ const DEFAULTS = {
   conversationUrl: "",
   inactivityMinutes: 12,
   cooldownMinutes: 15,
+  autoAlwaysAllow: true,
   continuationMessage:
     "Continue the existing job application pipeline from where you stopped. Do not restart completed applications or create duplicates.",
   lastSentAt: 0,
@@ -79,6 +80,16 @@ function findComposer() {
   );
 }
 
+function clickAlwaysAllow() {
+  const button = [...document.querySelectorAll('button, [role="button"]')].find((candidate) => {
+    const label = (candidate.textContent || "").trim().toLowerCase();
+    return visible(candidate) && !candidate.disabled && label === "always allow";
+  });
+  if (!button) return false;
+  button.click();
+  return true;
+}
+
 async function sendMessage(content) {
   const composer = findComposer();
   if (!composer || composer.getAttribute("aria-disabled") === "true") {
@@ -114,6 +125,14 @@ async function checkActivity() {
     const settings = { ...DEFAULTS, ...(await chrome.storage.local.get(DEFAULTS)) };
     if (!settings.enabled) return;
     if (normalizeUrl(location.href) !== normalizeUrl(settings.conversationUrl)) return;
+
+    if (settings.autoAlwaysAllow && clickAlwaysAllow()) {
+      await chrome.storage.local.set({
+        lastResult: 'Clicked “Always allow”',
+        lastCheckAt: Date.now(),
+      });
+      return;
+    }
 
     const activity = findActivity();
     if (!activity) {
