@@ -6,6 +6,7 @@ const DEFAULTS = {
   continuationMessage:
     "Continue the existing job application pipeline from where you stopped. Do not restart completed applications or create duplicates.",
   lastSentAt: 0,
+  lastSentActivityAnchorAt: 0,
   lastActivityLabel: "",
   activityAnchorAt: 0,
 };
@@ -129,10 +130,16 @@ async function checkActivity() {
     // Inactive tabs can have throttled page timers, leaving “Active 1m ago”
     // visually frozen. Preserve the first timestamp for an unchanged label so
     // inactivity still advances while the user is on another tab.
-    const activityAnchorAt =
-      settings.lastActivityLabel === activity.label && Number(settings.activityAnchorAt)
-        ? Number(settings.activityAnchorAt)
-        : now - activity.ageMs;
+    const previousAnchor = Number(settings.activityAnchorAt || 0);
+    const candidateAnchor = now - activity.ageMs;
+    let activityAnchorAt = previousAnchor || candidateAnchor;
+    if (settings.lastActivityLabel !== activity.label) {
+      // A normally aging label (7m -> 8m) points to roughly the same anchor.
+      // A meaningfully newer anchor means Applier became active again.
+      if (!previousAnchor || candidateAnchor > previousAnchor + 30_000) {
+        activityAnchorAt = candidateAnchor;
+      }
+    }
     const effectiveActivityAge = Math.max(0, now - activityAnchorAt);
     const status = {
       lastActivityLabel: activity.label,
@@ -148,20 +155,35 @@ async function checkActivity() {
       await chrome.storage.local.set({ ...status, lastResult: "Applier is currently working" });
       return;
     }
-    if (now - Number(settings.lastSentAt || 0) < cooldown) {
+    const lastSentAt = Number(settings.lastSentAt || 0);
+    const sentForAnchor = Number(settings.lastSentActivityAnchorAt || 0);
+    const sameIdlePeriod = sentForAnchor
+      ? Math.abs(sentForAnchor - activityAnchorAt) < 30_000
+      : activityAnchorAt <= lastSentAt;
+    if (sameIdlePeriod && now - lastSentAt < cooldown) {
       await chrome.storage.local.set({ ...status, lastResult: "Waiting for recovery cooldown" });
       return;
     }
 
     // Reserve the cooldown before touching the page so simultaneous checks cannot double-send.
-    await chrome.storage.local.set({ ...status, lastSentAt: now, lastResult: "Sending continuation…" });
+    await chrome.storage.local.set({
+      ...status,
+      lastSentAt: now,
+      lastSentActivityAnchorAt: activityAnchorAt,
+      lastResult: "Sending continuation…",
+    });
     try {
       await sendMessage(settings.continuationMessage);
-      await chrome.storage.local.set({ lastResult: "Continuation message sent", lastSentAt: now });
+      await chrome.storage.local.set({
+        lastResult: "Continuation message sent",
+        lastSentAt: now,
+        lastSentActivityAnchorAt: activityAnchorAt,
+      });
     } catch (error) {
       await chrome.storage.local.set({
         lastResult: `Could not send: ${error.message || error}`,
         lastSentAt: 0,
+        lastSentActivityAnchorAt: 0,
       });
     }
   } finally {

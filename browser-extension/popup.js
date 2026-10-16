@@ -10,6 +10,7 @@ const DEFAULTS = {
   activityAnchorAt: 0,
   lastCheckAt: 0,
   lastSentAt: 0,
+  lastSentActivityAnchorAt: 0,
 };
 
 const ids = ["enabled", "conversationUrl", "inactivityMinutes", "cooldownMinutes", "continuationMessage"];

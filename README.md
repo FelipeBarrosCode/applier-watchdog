@@ -26,10 +26,10 @@ There is no server, build process, database, Google Sheets integration, or crede
 The defaults are:
 
 - Consider Applier inactive after 12 minutes.
-- Send at most once every 15 minutes.
+- Retry at most once every 15 minutes during the same idle period.
 - Send: `Continue the existing job application pipeline from where you stopped. Do not restart completed applications or create duplicates.`
 
-The popup shows the detected `Active … ago` text, the last check, and when a message was last sent. Checks run from the extension background worker, so the Applier tab does not need to be selected. If ChatGPT freezes the visible activity label in an inactive tab, the extension keeps counting from the last observed activity time.
+The popup shows the detected `Active … ago` text, the last check, and when a message was last sent. Checks run from the extension background worker, so the Applier tab does not need to be selected. If ChatGPT freezes the visible activity label in an inactive tab, the extension keeps counting from the last observed activity time. If Applier becomes active after a nudge and later stalls again, that is treated as a new idle period and does not wait on the previous period's retry cooldown.
 
 ## Limitations
 
