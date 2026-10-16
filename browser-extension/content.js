@@ -6,6 +6,8 @@ const DEFAULTS = {
   continuationMessage:
     "Continue the existing job application pipeline from where you stopped. Do not restart completed applications or create duplicates.",
   lastSentAt: 0,
+  lastActivityLabel: "",
+  activityAnchorAt: 0,
 };
 
 let checking = false;
@@ -124,12 +126,21 @@ async function checkActivity() {
     const now = Date.now();
     const inactiveFor = Number(settings.inactivityMinutes) * 60_000;
     const cooldown = Number(settings.cooldownMinutes) * 60_000;
+    // Inactive tabs can have throttled page timers, leaving “Active 1m ago”
+    // visually frozen. Preserve the first timestamp for an unchanged label so
+    // inactivity still advances while the user is on another tab.
+    const activityAnchorAt =
+      settings.lastActivityLabel === activity.label && Number(settings.activityAnchorAt)
+        ? Number(settings.activityAnchorAt)
+        : now - activity.ageMs;
+    const effectiveActivityAge = Math.max(0, now - activityAnchorAt);
     const status = {
       lastActivityLabel: activity.label,
+      activityAnchorAt,
       lastCheckAt: now,
     };
 
-    if (activity.ageMs < inactiveFor) {
+    if (effectiveActivityAge < inactiveFor) {
       await chrome.storage.local.set({ ...status, lastResult: "Applier is active" });
       return;
     }

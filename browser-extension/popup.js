@@ -7,6 +7,7 @@ const DEFAULTS = {
     "Continue the existing job application pipeline from where you stopped. Do not restart completed applications or create duplicates.",
   lastResult: "Not checked yet",
   lastActivityLabel: "",
+  activityAnchorAt: 0,
   lastCheckAt: 0,
   lastSentAt: 0,
 };

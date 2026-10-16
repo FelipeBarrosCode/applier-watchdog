@@ -18,11 +18,21 @@ async function checkApplierTab() {
 
   const tabs = await chrome.tabs.query({ url: "https://chatgpt.com/*" });
   const expected = normalizeUrl(settings.conversationUrl);
-  const tab = tabs.find((candidate) => normalizeUrl(candidate.url || "") === expected);
+  let tab = tabs.find((candidate) => normalizeUrl(candidate.url || "") === expected);
 
   if (!tab?.id) {
+    tab = await chrome.tabs.create({ url: settings.conversationUrl, active: false });
     await chrome.storage.local.set({
-      lastResult: "Applier tab is not open",
+      lastResult: "Opened Applier in a background tab",
+      lastCheckAt: Date.now(),
+    });
+    return;
+  }
+
+  if (tab.discarded) {
+    await chrome.tabs.reload(tab.id);
+    await chrome.storage.local.set({
+      lastResult: "Waking the Applier background tab",
       lastCheckAt: Date.now(),
     });
     return;

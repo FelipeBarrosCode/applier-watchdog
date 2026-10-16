@@ -29,8 +29,8 @@
     <button id="useCurrent" class="secondary" style="margin-top:7px">Use current tab</button>
 
     <div class="row">
-      <div><label for="inactivityMinutes">Inactive after</label><input id="inactivityMinutes" type="number" min="1"><small>minutes</small></div>
-      <div><label for="cooldownMinutes">Send at most every</label><input id="cooldownMinutes" type="number" min="1"><small>minutes</small></div>
+      <div><label for="inactivityMinutes">Send after idle</label><input id="inactivityMinutes" type="number" min="1"><small>minutes</small></div>
+      <div><label for="cooldownMinutes">Retry every</label><input id="cooldownMinutes" type="number" min="1"><small>minutes while still idle</small></div>
     </div>
 
     <label for="continuationMessage">Message to send</label>
@@ -38,6 +38,7 @@
 
     <div class="buttons"><button id="save">Save</button><button id="check" class="secondary">Check now</button></div>
     <div id="status">Not checked yet</div>
+    <p class="subtitle" style="margin-top:10px">Works from other tabs. If Applier is not open, the extension opens it in a background tab.</p>
     <script src="popup.js"></script>
   </body>
 </html>

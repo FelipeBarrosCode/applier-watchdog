@@ -21,7 +21,7 @@ There is no server, build process, database, Google Sheets integration, or crede
 5. Open your Applier Dot conversation in ChatGPT.
 6. Open the extension and click **Use current tab**.
 7. Enable monitoring, adjust the times/message if wanted, and click **Save**.
-8. Leave the Applier conversation tab open. It does not need to remain focused.
+8. You can switch to any other tab. If the Applier tab is closed, the extension opens it again in the background.
 
 The defaults are:
 
@@ -29,10 +29,10 @@ The defaults are:
 - Send at most once every 15 minutes.
 - Send: `Continue the existing job application pipeline from where you stopped. Do not restart completed applications or create duplicates.`
 
-The popup shows the detected `Active … ago` text, the last check, and when a message was last sent.
+The popup shows the detected `Active … ago` text, the last check, and when a message was last sent. Checks run from the extension background worker, so the Applier tab does not need to be selected. If ChatGPT freezes the visible activity label in an inactive tab, the extension keeps counting from the last observed activity time.
 
 ## Limitations
 
-- The Applier conversation tab and Chrome must remain open.
+- Chrome must remain open.
 - This relies on the visible ChatGPT page. If ChatGPT changes its HTML, the popup reports that the activity text or message controls could not be found instead of clicking blindly.
 - It only watches the exact conversation selected with **Use current tab**.
